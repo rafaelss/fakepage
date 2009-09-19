@@ -1,8 +1,33 @@
+h1. FakePage
+
+FakePage is a simple class that use rack and thin to create an environment where you can make tests simulating real web requests.
+
+h2. Example
+
+bc. page = FakePage.new('home', :body => 'this is my home page')
+# Net::HTTP
+puts Net::HTTP.get(page.url)
+# Curb
+puts Curl::Easy.perform(page.url).body_str
+
+Also, you can specify the HTTP method
+
+bc. FakePage.new('another_page', :method => :get, :body => 'another body page')
+
+Or
+
+bc. FakePage.get('do_get', :body => 'another body page')
+FakePage.post('do_post', :body => 'another body page')
+FakePage.put('do_put', :body => 'another body page')
+FakePage.delete('do_delete', :body => 'another body page')
+
+Others options are: code and content_type
+
 h2. LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2008 FIX
+Copyright (c) 2009 Rafael Souza <me@rafaelss.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
