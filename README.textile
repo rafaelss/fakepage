@@ -23,6 +23,12 @@ FakePage.delete('do_delete', :body => 'another body page')
 
 Others options are: code and content_type
 
+h2. Source Code
+
+The source code is hosted on github
+
+"http://github.com/rafaelss/fakepage":http://github.com/rafaelss/fakepage
+
 h2. LICENSE:
 
 (The MIT License)
