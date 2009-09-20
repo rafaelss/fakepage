@@ -17,10 +17,6 @@ class FakePage
         code = options[:code] || 200
         body = options[:body] || ""
       else
-        #puts 
-        #puts '-------------'
-        #puts "#{options[:method].to_s.upcase} == #{env['REQUEST_METHOD']}"
-
         code = 405
         body = Rack::Utils::HTTP_STATUS_CODES[code]
       end
