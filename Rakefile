@@ -5,7 +5,7 @@ require 'rake/gempackagetask'
 require 'spec/rake/spectask'
  
 GEM = "fakepage"
-GEM_VERSION = "0.2.1"
+GEM_VERSION = "0.2.2"
 SUMMARY = "Agnostic library for test web requests creating fake pages"
 DESCRIPTION = "Agnostic library for test web requests creating fake pages. With fakepage you can make tests requests to the web pages, independently of the framework used to do that"
 AUTHOR = "Rafael Souza"

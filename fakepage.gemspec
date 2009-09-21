@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rafael Souza"]
-  s.date = %q{2009-09-20}
+  s.date = %q{2009-09-21}
   s.description = %q{Agnostic library for test web requests creating fake pages. With fakepage you can make tests requests to the web pages, independently of the framework used to do that}
   s.email = %q{me@rafaelss.com}
   s.files = ["lib/fakepage.rb", "test/spec_fakepage.rb"]
