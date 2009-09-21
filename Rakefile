@@ -16,10 +16,12 @@ spec = Gem::Specification.new do |s|
   s.name = GEM
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
+  s.rubygems_version = %q{1.3.5}
   s.summary = SUMMARY
   s.description = DESCRIPTION
   s.require_paths = ['lib']
-  s.files = FileList['lib/**/*.rb' '[A-Z]*'].to_a
+  s.files = ['lib/fakepage.rb', 'test/spec_fakepage.rb']
+  s.test_files = ['test/spec_fakepage.rb']
 
   s.add_dependency(%q<thin>, [">= 1.2.2"])
 
