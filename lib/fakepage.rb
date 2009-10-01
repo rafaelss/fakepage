@@ -7,11 +7,9 @@ class FakePage
 
   def initialize(name, options)
     @url = "http://localhost:#{@@options[:server_port]}/#{name}"
-
     @@maps ||= {}
     @@maps["/#{name}"] = lambda do |env|
       options[:method] ||= :get
-
       headers = { 'Content-Type' => options[:content_type] || 'text/plain' }
       if options[:method].to_s.upcase == env['REQUEST_METHOD']
         code = options[:code] || 200
@@ -31,14 +29,6 @@ class FakePage
 
   def self.post(name, options)
     self.new(name, options.merge(:method => :post))
-  end
-
-  def self.put(name, options)
-    self.new(name, options.merge(:method => :put))
-  end
-
-  def self.head(name, options)
-    self.new(name, options.merge(:method => :head))
   end
 
   def self.options

@@ -4,52 +4,55 @@ require File.expand_path('../../lib/fakepage', __FILE__)
 FakePage.start
 
 def request(name, options = {})
+  options[:method] ||= :get
+  options[:postdata] ||= {}
+
   page = FakePage.new(name, { :code => 200 }.merge(options))
-  Curl::Easy.perform(page.url)
+
+  args = []
+  if options[:method] == :post
+    options[:postdata].each do |k, v|
+      args << Curl::PostField.content(k.to_s, v)
+    end
+  end
+
+  Curl::Easy.perform(page.url) do |curl|
+    curl.send(:"http_#{options[:method]}", *args)
+  end
 end
 
 describe "FakePage" do
 
-  it "should have methods for get, post, put and head http methods" do
+  it "should have methods for get and post http methods" do
     FakePage.respond_to?(:get).should.be.true
     FakePage.respond_to?(:post).should.be.true
-    FakePage.respond_to?(:put).should.be.true
-    FakePage.respond_to?(:head).should.be.true
   end
 
   describe "performing requests" do
 
-    allowed_methods = [:get, :post, :put, :head]
+    allowed_methods = [:get, :post]
 
-    allowed_methods.each do |method|
+    allowed_methods.each do |amethod|
       
-      describe method.to_s.upcase do
+      describe amethod.to_s.upcase do
         
         before do
-          @page = FakePage.new("do_#{method}", :method => method)
+          @page = FakePage.new("do_#{amethod}", :method => amethod)
         end
 
-        it "should returns status code 200 for #{method}" do
+        it "should returns status code 200 for #{amethod}" do
           response = Curl::Easy.perform(@page.url) do |curl|
-            if method == :put
-              curl.send(:"http_#{method}", "data")
-            else
-              curl.send(:"http_#{method}")
-            end
+            curl.send(:"http_#{amethod}")
           end
 
           response.response_code.should.be.equal 200
         end
 
-        allowed_methods.select { |m| m != method }.each do |not_allowed_method|
+        allowed_methods.select { |m| m != amethod }.each do |not_allowed_method|
 
           it "should returns status code 405 for #{not_allowed_method}" do
             response = Curl::Easy.perform(@page.url) do |curl|
-              if not_allowed_method == :put
-                curl.send(:"http_#{not_allowed_method}", "data")
-              else
-                curl.send(:"http_#{not_allowed_method}")
-              end
+              curl.send(:"http_#{not_allowed_method}")
             end
 
             response.response_code.should.be.equal 405
@@ -107,6 +110,11 @@ describe "FakePage" do
       it "should accept :content_type" do
         response = request("content_type", :content_type => "text/html")
         response.content_type.should.be.equal "text/html"
+      end
+      
+      it "should accept :postdata" do
+        response = request("content_type", :postdata => { :field => 'value' }, :method => :post)
+        response.response_code.should.be.equal 200
       end
     end
   end
