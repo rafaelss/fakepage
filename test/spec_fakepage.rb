@@ -6,6 +6,7 @@ FakePage.start
 def request(name, options = {})
   options[:method] ||= :get
   options[:postdata] ||= {}
+  curl_verbose = options.delete(:verbose) || false
 
   page = FakePage.new(name, { :code => 200 }.merge(options))
 
@@ -17,6 +18,8 @@ def request(name, options = {})
   end
 
   Curl::Easy.perform(page.url) do |curl|
+    curl.verbose = curl_verbose
+    curl.follow_location = true
     curl.send(:"http_#{options[:method]}", *args)
   end
 end
@@ -111,10 +114,20 @@ describe "FakePage" do
         response = request("content_type", :content_type => "text/html")
         response.content_type.should.be.equal "text/html"
       end
-      
+
       it "should accept :postdata" do
         response = request("content_type", :postdata => { :field => 'value' }, :method => :post)
         response.response_code.should.be.equal 200
+      end
+
+      it "should accept :referer" do
+        response = request("redirect", :referer => "http://www.terra.com.br")
+        response.header_str.should.include "Referer: http://www.terra.com.br"
+      end
+
+      it "should accept :redirect and make a http redirect" do
+        response = request("redirect", :redirect => "final_page")
+        response.last_effective_url.should.include "final_page"
       end
     end
   end

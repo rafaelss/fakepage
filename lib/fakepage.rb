@@ -7,10 +7,22 @@ class FakePage
 
   def initialize(name, options)
     @url = "http://localhost:#{@@options[:server_port]}/#{name}"
+
+    options[:method] ||= :get
+    headers = { 'Content-Type' => options[:content_type] || 'text/plain' }
+
+    if options[:referer]
+      headers['Referer'] = options[:referer]
+    end
+
+    if options[:redirect]
+      redirect_page = FakePage.get(options.delete(:redirect), :body => options.delete(:body), :referer => self.url)
+      headers['Location'] = redirect_page.url
+      options[:code] = 301
+    end
+
     @@maps ||= {}
     @@maps["/#{name}"] = lambda do |env|
-      options[:method] ||= :get
-      headers = { 'Content-Type' => options[:content_type] || 'text/plain' }
       if options[:method].to_s.upcase == env['REQUEST_METHOD']
         code = options[:code] || 200
         body = options[:body] || ""
@@ -24,11 +36,11 @@ class FakePage
   end
 
   def self.get(name, options)
-    self.new(name, options.merge(:method => :get))
+    self.new(name, options.merge!(:method => :get))
   end
 
   def self.post(name, options)
-    self.new(name, options.merge(:method => :post))
+    self.new(name, options.merge!(:method => :post))
   end
 
   def self.options
